@@ -1,0 +1,51 @@
+{% extends 'Base/base.html' %}
+{% block body%}
+<div class="container-mb-3 m-5">
+    <div class="col-auto me-auto">
+        <h1>Clubs</h1>
+    </div>
+    <div class="row">
+        {% for club in clubs%}
+        <div class="col-sm-6 mb-3 ">
+            <div class="card mb-3"
+                style="min-height: 250px;max-height: fit-content;background-color: rgb(218, 249, 239);">
+                <div class="row g-0">
+                    <div class="col-md-4">
+                        <img src="/media/{{club.club_img}}" class="img-fluid rounded-start align-items-center"
+                            style="height:fit-content;width: min-content;border: 0cap;border-radius: 5px;">
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body ">
+                            <h5 class="card-title">{{club.club_name}}</h5>
+                            <p class="card-text">{{club.club_desc}}.</p>
+                            <a href="{% url 'ClubView' club.id %}" class="btn btn-primary">View Club</a>
+                            {% if request.user.profile.is_student and club.member.count > 0 %}
+                                {% for x in club.member.all %}
+                                    {% if request.user == x.member.user %}
+                                    <a class="btn btn-diabled" disabled>Joined</a>
+                                    {% else %}
+                                        {% if request.user.profile.get_membership_count < 2  and x == club.member.last %} <a
+                                            href="{% url 'ClubJoin' club.id %}" class="btn btn-primary">Join</a>
+                                        {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+                            {% else %}
+                                    {% if request.user.profile.is_student and request.user.profile.get_membership_count < 2 %} <a
+                                        href="{% url 'ClubJoin' club.id %}" class="btn btn-primary">Join</a>
+                                    {% endif %}
+                            {% endif %}
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {%endfor%}
+    </div>
+    <div class="container-fluid d-flex justify-content-end sticky-bottom my-2">
+        {% if request.user.is_superuser %}
+        <a href="{% url 'AddClub'%}" class="btn btn-primary" style="border: 0cap;border-radius: 50%" >+</a>
+        {% endif%}
+    </div>
+</div>
+{%endblock%}

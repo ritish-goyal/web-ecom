@@ -1,0 +1,34 @@
+{% extends 'Base\base.html'%}
+{% block body%}
+<div class="container my-5">
+    <h3>Update</h3>
+    <form method="post" action="{% url 'Logedin' %}" enctype="multipart/form-data">{% csrf_token %}
+        <div class="mb-3">
+            <label for="inputEmail3" class="col-sm-2 col-form-label">User Image</label>
+            <input type="file" class="form-control" id="inputEmail3"  name="img">
+        </div>
+        <div class="mb-3">
+            <label for="inputEmail3" class="col-sm-2 col-form-label">Username</label>
+            <input type="text" class="form-control" id="inputEmail3" value="{{prof.user.username}}" name="username">
+        </div>
+        <div class="mb-3">
+            <label for="exampleFormControlTextarea1" class="form-label">Password</label>
+            <input type="password" class="form-control" id="inputEmail3" value="{{prof.user.password}}" name="password">
+          </div>
+          {% if not prof.user.is_superuser %}
+          <div class="mb-3">
+            <select name="type" id="">
+                {% if prof.is_student %}
+                <option value="">student</option>
+                <option >teacher</option>
+                {% else %}
+                <option value="">teacher</option>
+                <option >student</option>
+                {% endif %}
+            </select>
+          </div>
+          {% endif %}
+        <button type="submit" class="btn btn-success">Save</button>
+    </form>
+</div>
+{% endblock %}

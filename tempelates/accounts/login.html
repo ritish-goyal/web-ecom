@@ -1,0 +1,20 @@
+{% extends 'Base\base.html'%}
+{% block body%}
+<div class="container my-5">
+    <h3>LogIn</h3>
+    <form method="post" action="{% url 'Logedin' %}" enctype="multipart/form-data">{% csrf_token %}
+        <div class="mb-3">
+            <label for="inputEmail3" class="col-sm-2 col-form-label">Username</label>
+            <input type="text" class="form-control" id="inputEmail3" name="username">
+        </div>
+        <div class="mb-3">
+            <label for="exampleFormControlTextarea1" class="form-label">Password</label>
+            <input type="password" class="form-control" id="inputEmail3" name="password">
+          </div>
+          <div class="mb-3">
+            <!-- Don,t have a Account?<a href="{%url 'logout'%}">Signup</a> -->
+          </div>
+        <button type="submit" class="btn btn-success">Login</button>
+    </form>
+</div>
+{% endblock %}

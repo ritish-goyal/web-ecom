@@ -1,0 +1,59 @@
+{% extends 'Base/base.html' %}
+{% block body%}
+<form class="container" method="post" enctype="multipart/form-data">{%csrf_token%}
+    <h1>Add Student Cordinator</h1>
+    <div class="row mb-3">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">S.No.</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Select Cordinator</th>
+                </tr>
+            </thead>
+            <tbody id="items">
+                {% for std in club.member.all %}
+                {% if std.request %}
+                <tr>
+                    <th scope="row">{{forloop.counter}}{{std.id}}</th>
+                    <td>{{std.member.user.username}}</td>
+                    <td>
+                        <a type="submit" href="{% url 'add' std.id%}" class="btn btn-outline-primary">Add</a>
+                        <a type="submit" href="{% url 'rem' std.id%}" class="btn btn-outline-primary">Clear</a>
+                    </td>
+                </tr>
+                {% endif %}
+                {%endfor%}
+            </tbody>
+        </table>
+    </div>
+
+</form>
+<div class="container">
+    <h1>Student Cordinators</h1>
+    <div class="row mb-3">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">S.No.</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Select Cordinator</th>
+                </tr>
+            </thead>
+            <tbody id="items">
+                {% for std in club.member.all %}
+                {% if std.is_cordinator %}
+                <tr>
+                    <th scope="row">{{forloop.counter}}{{std.id}}</th>
+                    <td>{{std.member.user.username}}</td>
+                    <td>
+                        <a type="submit" href="{% url 'rem' std.id%}" class="btn btn-outline-primary">remove</a>
+                    </td>
+                </tr>
+                {% endif %}
+                {%endfor%}
+            </tbody>
+        </table>
+    </div>
+</div>
+    {%endblock%}

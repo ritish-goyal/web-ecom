@@ -1,0 +1,21 @@
+{% extends 'Base/base.html'%}
+{% block body%}
+
+<div class="container-mb-3 m-5">
+    <div class="card mb-3 body-bg-dark mb-3 border-success mb-3">
+        <img src="/media/{{club.club_img}}" class="img-fluid rounded-start align-items-center"
+            style="height:fit-content;width: min-content;border: 0cap;border-radius: 5px;">
+        <div class="card-body">
+            <h2>{{elec.club.club_name}}</h2>
+            <p>{{elec.club.club_desc}}</p>
+            <!-- <h6 style="font-size: small;">EAstablished on: {{club.created_at}}</h6> -->
+            <div class="container-fluid">
+                {%  for x in elec.candidate.all %}
+                <a class="btn btn-outline-primary" href="{% url 'Vote' x.id%}">{{x.candidate}}</a>
+                {% endfor%}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

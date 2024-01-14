@@ -1,0 +1,171 @@
+{% extends 'Base/base.html'%}
+{% block body%}
+
+<div class="container-mb-3 m-5">
+    <div class="row g-30">
+        <div class="col-md-8">
+            <div class="card mb-3 body-bg-dark mb-3 border-success mb-3">
+                <div class="row g-30">
+                    <div class="col-md-8">
+                        <img src="/media/{{club.club_img}}" class="img-fluid rounded-start align-items-center"
+                            style="height:fit-content;width: min-content;border: 0cap;border-radius: 5px;">
+                        <div class="card-body">
+                            <h2>{{club.club_name}}
+                                <!-- <a href=""
+                                    style="text-decoration: none;"><span>+</span></a>
+                                <div class="col-12 my-2 mx-2">
+                                    <a href="" class="btn btn-primary">Edit</a>
+                                    {% if request.user.is_superuser %}
+                                    <a href="" class="btn btn-primary">Delete</a>
+                                    {% endif %}
+                                </div> -->
+                            </h2>
+                            <p>{{club.club_desc}}
+                            </p>
+                            <h6 style="font-size: small;">EAstablished on: {{club.created_at}}</h6>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-3 body-bg-dark mb-3 border-success mb-3">
+                <h4 class="mx-2 my-2 text-center">Chat</h4>
+                <hr style="margin: 0;">
+                <div class="container-fluid m-2">
+                    {% for com in club.clubchat.all %}
+                    {% if request.user != com.user.user %}
+                    <div class="row" style="max-width: 80%;">
+                        <div class="col-md-4" style="padding: 0%;width: fit-content;height: fit-content;">
+                            <img src="/media/{{com.user.profile_img}}" width="20px" height="20px"
+                                style="border: 1px solid black;border-radius: 50%;" alt="">
+                        </div>
+                        <div class="col-md-8" style="padding: 0%;">
+                            <div class="card-body"
+                                style="background-color: rgb(214, 248, 237);margin: 4px;border: 0cap;border-radius: 5px;padding: 4px;padding-bottom: 1px;max-width: 100%;width: fit-content;">
+                                <h6 class="mx-3">
+                                    {{com.user.user.username}}
+                                </h6>
+                                <div class="mx-3">{{com.comment}}</div>
+                                <p style="text-align: end;margin: 0;">
+                                    {{com.updated_at.time.hour}}:{% if com.updated_at.time.minute > 10 %}{{com.updated_at.time.minute}}
+                                    {% else%}0{{com.updated_at.time.minute}}{% endif %}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div style="display: flex;justify-content: flex-end;width: 100%;">
+                        <div class="card-body"
+                            style="display: flex;justify-content: end;flex-direction: column; background-color: rgb(214, 248, 237);margin: 4px;border: 0cap;border-radius: 5px;padding: 4px;padding-bottom: 1px;max-width: 55%;width: fit-content;">
+                            <h6 class="mx-3">
+                                You
+                            </h6>
+                            <div class="mx-3">{{com.comment}}</div>
+                            <p style="text-align: end;margin: 0;">
+                                {{com.updated_at.time.hour}}:{% if com.updated_at.time.minute > 10 %}{{com.updated_at.time.minute}}
+                                {% else%}0{{com.updated_at.time.minute}}{% endif %}
+                            </p>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+                {% if request.user.is_authenticated%}
+                <form class="d-flex m-2" action="{% url 'ClubChat' club.id %}" method="post" role="search">
+                    {% csrf_token%}
+                    <img src="/media/{{request.user.profile.profile_img}}" width="30px" height="30px" class="me-2 my-1"
+                        style="border: 1px solid black;border-radius: 50%;" alt="">
+                    <input class="form-control me-2" type="text" placeholder="Post Your Comment" name="comment">
+                    <button class="btn btn-outline-success" type="submit">Comment</button>
+                </form>
+                {% else %}
+                <h6 class="m-2"><a href="/login/?next={%url 'login' club.id%}"
+                        style="text-decoration: none;">Login</a>/<a href="{% url 'Signin' %}"
+                        style="text-decoration: none;">SignIn</a> to Post or Reply Comments.</h6>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card mb-3 body-bg-dark mb-3 border-success mb-3">
+                <div class="col-12">
+                    <div class="col-12 my-2">
+                        <h5 class="mx-2">Head
+                            {%if request.user.profile.teacher.club_name == club.club_name and not club.election %}
+                            <a href="{% url 'StartElections' club.id %}" class="btn btn-outline-primary"> Start Elections</a>
+                            {% endif %}
+                            {%if request.user.profile.teacher.club_name == club.club_name and club.election.voting %}
+                            <a href="{% url 'StopVoting' club.id %}" class="btn btn-outline-primary"> Stop Voting</a>
+                            {% endif %}
+                            {%if request.user.profile.teacher.club_name == club.club_name and club.election and not club.election.voting %}
+                            <a href="{% url 'StartVoting' club.id %}" class="btn btn-outline-primary"> Start Voting</a>
+                            {% endif %}
+                            {% for stdc in club.member.all %}
+                            {%if not club.election.voting and club.election and request.user == stdc.member.user and stdc.is_cordinator and not stdc.stdcand%}
+                            <a href="{% url 'Nominate' club.id %}" class="btn btn-outline-primary">Nominate</a>
+                            {% endif %}
+                            {%if request.user == stdc.member.user and club.election.voting%}
+                            <a href="{% url 'selectVote' club.election.id %}" class="btn btn-outline-primary">Vote</a>
+                            {% endif %}
+                            {% endfor %}
+                            
+                        </h5>
+                        {% for stdc in club.member.all %}
+                        {% if stdc.head %}
+                        <h6 class="card-body" >{{stdc.member.user.username}}</h6>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                    <h5 class="mx-2">Coordinators</h5>
+                    <div class="col-12">
+                        <div class="card-body">
+                            <h6>Teacher Coordinator</h6>
+                                {{club.teacher_cordinator.user.username}}
+                        </div>
+                        <div class="card-body">
+                            <h6>Student Coordinators
+                                {%if request.user.profile.teacher.club_name == club.club_name and club.get_stdc_count < 10 and club.get_request_count > 0%}
+                                <a class="btn btn-outline-primary m-2" href="{% url 'Addstdc' club.id%}">
+                                    +
+                                </a>
+                                {% endif %}
+                                {%if request.user.profile.teacher.club_name == club.club_name and club.get_stdc_count > 0 and club.get_request_count == 0%}
+                                <a class="btn btn-outline-primary m-2" href="{% url 'Remstdc' club.id%}">
+                                    remove all
+                                </a>
+                                {% endif %}
+                                
+                            </h6>
+                            <ul>
+                                {% for stdc in club.member.all %}
+                                {% if stdc.is_cordinator %}
+                                <li>{{stdc.member.user.username}}</li>
+                                {% endif %}
+                                {% if stdc.request %}
+                                {% else %}
+                                {% if request.user == stdc.member.user and club.get_stdc_count != 10 and not stdc.is_cordinator%}
+                                <a class="btn btn-outline-primary m-2" href="{% url 'Reqc' club.id %}">
+                                    Request
+                                </a>
+                                {%endif%}
+                                {%endif%}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="card-body">
+                            <h5>Members</h5>
+                            <ul>
+                                {% for stdc in club.member.all %}
+                                <li>{{stdc.member.user.username}}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
