@@ -1,1 +1,0 @@
-# Practice-Django-and-React
